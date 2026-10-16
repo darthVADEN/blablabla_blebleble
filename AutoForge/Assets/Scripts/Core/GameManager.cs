@@ -204,8 +204,24 @@ public sealed class GameManager : MonoBehaviour
         return null;
     }
 
-    bool IsPointerOverUI() => UnityEngine.EventSystems.EventSystem.current != null &&
-                              UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+    // uGUI (UnityEngine.UI / EventSystems) в проект не включён — весь HUD рисуется через IMGUI (OnGUI).
+    // Поэтому проверка "курсор над панелью" делается по прямоугольникам панелей вручную.
+    bool IsPointerOverUI()
+    {
+        if (UI != null && UI.InputLocked) return true; // открыт редактор процессора
+        var mp = Input.mousePosition; // IMGUI-прямоугольники заданы в экранных координатах (y сверху вниз)
+        float topY = Screen.height - mp.y;
+        // нижняя панель строительства: Rect(центр, Screen.height-84, w, 74)
+        int n = System.Enum.GetValues(typeof(MachineType)).Length;
+        float w = n * 96f + 20f;
+        float bx = Screen.width / 2f - w / 2f;
+        if (mp.x >= bx && mp.x <= bx + w && topY >= Screen.height - 84 && topY <= Screen.height - 10) return true;
+        // левая верхняя панель статуса/цели: Rect(10,10,340,96) + инфо-панель ниже
+        if (mp.x <= 350 && topY <= 340) return true;
+        // правая верхняя панель волн: Rect(Screen.width-260, 10, 250, 76)
+        if (mp.x >= Screen.width - 260 && topY <= 86) return true;
+        return false;
+    }
 
     public void TryBuild(MachineType type, Vector2Int cell)
     {
