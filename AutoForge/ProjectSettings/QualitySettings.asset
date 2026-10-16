@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!47 &1
+QualitySettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 5
+  m_CurrentQuality: 2
+  m_QualitySettings:
+  - serializedVersion: 2
+    name: Medium
+    pixelLightCount: 2
+    shadowDistance: 30
+    anisotropicTextureFiltering: 1
+  - serializedVersion: 2
+    name: High
+    pixelLightCount: 4
+    shadowDistance: 60
+    anisotropicTextureFiltering: 1
+  m_PerPlatformDefaultQuality: {}

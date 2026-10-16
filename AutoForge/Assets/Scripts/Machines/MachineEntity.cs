@@ -85,11 +85,11 @@ namespace AF.Core
                 Progress += GameNet.TICK;
                 if (Progress >= Current.Seconds)
                 {
-                    // consum inputs
+                    // consum inputs (TakeFrom вернёт false если чего-то не хватило — тогда просто что смогли)
                     foreach (var it in Current.Inputs) TakeIn(it, 1);
                     foreach (var it in Current.Outputs) if (it != Item.None) AddOut(it, 1);
                     if (Type == MachineType.Lab) GameManager.Instance?.Research?.AddProgress(1f); // цель игры
-                    Current = null; Progress = 0f;
+                    Current = null; Progress = 0f; Cooldown = 0.2f;
                 }
                 return;
             }
@@ -159,7 +159,7 @@ namespace AF.Core
                     Belt.RemoveAt(Belt.Count - 1);
                     target.Receive(head, 1);
                 }
-                else if (target == null)
+                else if (target == null || !target.Alive)
                 {
                     // выпал за пределы/в пустоту — теряется
                     Belt.RemoveAt(Belt.Count - 1);
@@ -210,7 +210,8 @@ namespace AF.Core
         static bool TakeFrom(Dictionary<Item, int> d, Item it, int n)
         {
             d.TryGetValue(it, out int c);
-            if (c <= n) d.Remove(it); else d[it] = c - n;
+            if (c < n) return false;          // нечего снимать — рецепт не выполняем
+            if (c == n) d.Remove(it); else d[it] = c - n;
             return true;
         }
 

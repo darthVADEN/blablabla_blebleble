@@ -118,13 +118,16 @@ public static class MachineView
                 float t = m.Working ? Mathf.Abs(Mathf.Sin(m.Progress / CurrentSec(m) * Mathf.PI)) : 0f;
                 v.Piston.localPosition = new Vector3(0.5f, 0.7f - t * 0.25f, 0.5f);
             }
-            if (v.Barrel != null)
+            if (v.Barrel != null && v.Barrel.parent != null)
             {
                 var e = AF.Enemies.EnemySystem.Nearest(m.Cell.ToVector3XZ(), 12f);
                 if (e != null)
                 {
-                    var dir = e.Pos - v.Root.position - new Vector3(0.5f, 0.7f, 0);
-                    v.Barrel.LookAt(e.Pos);
+                    // ствол — дочерний примитив с неравномерным масштабом, поэтому крутим его родителя-пустышку
+                    var pivot = v.Barrel.parent;
+                    var look = e.Pos - new Vector3(pivot.position.x, e.Pos.y, pivot.position.z);
+                    if (look.sqrMagnitude > 0.01f)
+                        pivot.rotation = Quaternion.Slerp(pivot.rotation, Quaternion.LookRotation(look), 10f * dt);
                 }
             }
             // предметы на ленте

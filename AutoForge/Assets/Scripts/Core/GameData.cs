@@ -2,6 +2,7 @@
 // Всё живёт в плоском мире чанков (как Factorio), машины работают по "сети"
 // с фиксированным тиком (как Омега Крафтер / Create — синхронная кинематика).
 using System.Collections.Generic;
+using UnityEngine; // Vector2Int для OreOutput
 
 namespace AF.Core
 {
